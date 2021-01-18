@@ -1,36 +1,22 @@
 <script>
-import Task from './Task.svelte';
-import LoadingRow from './LoadingRow.svelte';
+import PureTaskList from './PureTaskList.svelte';
+import { taskStore } from '../store.js';
 
-export let loading = false;
-export let tasks = [];
-
-// Reactive declarations
-$: noTasks = tasks.length === 0;
-$: emptyTasks = noTasks && !loading;
-$: tasksInOrder = [
-  ...tasks.filter( (task) => task.state==='TASK_PINNED'),
-  ...tasks.filter( (task) => task.state!=='TASK_PINNED'),
-];
-
+function onPinTask(event){
+  taskStore.pinTask(event.detail.id);
+}
+function onArchiveTask(event){
+  taskStore.archiveTask(event.detail.id);
+}
 </script>
 
-{#if loading}
-  <div class='list-items'>
-    <LoadingRow />
-    <LoadingRow />
-    <LoadingRow />
-    <LoadingRow />
-    <LoadingRow />
-  </div>
-{/if}
-{#if emptyTasks}
-  <div class='list-items'>No Tasks!</div>
-{/if}
-{#each tasksInOrder as task}
-  <Task {task} on:onPinTask on:onArchiveTask />
-{/each}
-
+<div>
+  <PureTaskList
+    tasks={$taskStore}
+    on:onPinTask={onPinTask}
+    on:onArchiveTask={onArchiveTask}
+    />
+</div>
 
 <style>
 
